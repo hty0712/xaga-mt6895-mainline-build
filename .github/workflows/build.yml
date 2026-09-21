@@ -1235,6 +1235,24 @@ jobs:
           printf 'root:%s\n' "$ROOT_PASSWORD" | sudo tee rootfs/rootpw.txt >/dev/null
           sudo chmod 600 rootfs/rootpw.txt
 
+          # ---- pacman.conf 替换（必须在 chroot 跑 pacman-key/Syu 之前）----
+          # pacman.new.conf 相对 ALARM 原版做了两处关键调整：
+          #   * DisableSandboxFilesystem / DisableSandboxSyscalls
+          #     qemu-user-static 用户态模拟下，pacman 的 seccomp/landlock 沙箱无法
+          #     正常工作，会直接拒绝启动或下载（Operation not permitted）。
+          #   * 去掉 CheckSpace
+          #     构建期 free space 检测容易误判，稀疏化之前没必要每次检查。
+          PACMAN_NEW_CONF="$GITHUB_WORKSPACE/pacman.conf"
+          if [ -f "$PACMAN_NEW_CONF" ]; then
+            sudo cp -f "$PACMAN_NEW_CONF" rootfs/etc/pacman.conf
+            echo "已用 pacman.conf 覆盖 rootfs/etc/pacman.conf"
+            echo "--- 关键行确认 ---"
+            grep -nE 'DisableSandbox|CheckSpace' rootfs/etc/pacman.conf || true
+          else
+            echo "::warning::找不到 $PACMAN_NEW_CONF，保留 tarball 自带的 pacman.conf"
+            echo "::warning::qemu 下若 pacman 报沙箱错误，请确认仓库根目录里有 pacman.conf"
+          fi
+
       - name: "[arch] chroot 配置系统（gshadow 修复 / wireless-regdb / 账户清理）"
         if: ${{ env.ROOTFS_TYPE == 'Arch Linux ARM' }}
         run: |
