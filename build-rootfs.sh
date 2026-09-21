@@ -304,7 +304,7 @@ EOF
 #   * 关闭 CheckSpace
 #     —— 构建期镜像大小尚未真正占满、且 sparse 之前 free space 检测会误判。
 if [ "$DISTRO" = arch ]; then
-  PACMAN_NEW_CONF="$REPO_ROOT/pacman.new.conf"
+  PACMAN_NEW_CONF="$REPO_ROOT/pacman.conf"
   if [ -f "$PACMAN_NEW_CONF" ]; then
     cp -f "$PACMAN_NEW_CONF" "$WORKDIR/etc/pacman.conf"
     log "已用 pacman.new.conf 覆盖 /etc/pacman.conf（关沙箱 / 关 CheckSpace）"
