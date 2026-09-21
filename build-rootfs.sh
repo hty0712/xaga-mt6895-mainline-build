@@ -295,7 +295,24 @@ ff00::0         ip6-mcastprefix
 ff02::1         ip6-allnodes
 ff02::2         ip6-allrouters
 EOF
-
+# --- pacman.conf 替换（仅 Arch） --------------------------------------------
+# 注意：必须在 chroot 里跑 pacman-key --init / pacman -Syu 之前完成。
+# pacman.new.conf 相对原版做了两处关键调整：
+#   * 打开 DisableSandboxFilesystem / DisableSandboxSyscalls
+#     —— 在 qemu-user-static 用户态模拟下，pacman 的 seccomp/landlock 沙箱
+#        无法正常工作，会直接拒绝启动或下载（Alarm 沙箱报 Operation not permitted）。
+#   * 关闭 CheckSpace
+#     —— 构建期镜像大小尚未真正占满、且 sparse 之前 free space 检测会误判。
+if [ "$DISTRO" = arch ]; then
+  PACMAN_NEW_CONF="$REPO_ROOT/pacman.new.conf"
+  if [ -f "$PACMAN_NEW_CONF" ]; then
+    cp -f "$PACMAN_NEW_CONF" "$WORKDIR/etc/pacman.conf"
+    log "已用 pacman.new.conf 覆盖 /etc/pacman.conf（关沙箱 / 关 CheckSpace）"
+  else
+    warn "找不到 $PACMAN_NEW_CONF，保留 tarball 自带的 pacman.conf"
+    warn "  qemu 下若 pacman 报沙箱错误，请手动设 DisableSandboxFilesystem/DisableSandboxSyscalls"
+  fi
+fi
 # root 必须指向 initramfs 找的那个分区节点，否则 systemd 会认为 rootfs 不匹配
 cat > "$WORKDIR/etc/fstab" <<EOF
 # <device>        <mount>  <type>  <options>                          <dump> <pass>
