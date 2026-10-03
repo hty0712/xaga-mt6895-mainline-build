@@ -9,11 +9,11 @@
   },
   "kernel": {
     "branch": "7.2-mt6895-xiaomi-xaga",
-    "date": "2026-10-02T14:53:28Z",
+    "date": "2026-10-03T08:06:15Z",
     "repo": "MT6895-Mainline/linux",
-    "sha": "452811fdcf67fc7c6d2f97b46e80c6e5ac29d8c5",
-    "subject": "Merge pull request #17 from 2824799/fix/xaga-extra-reserved-memory-upstream",
-    "url": "https://github.com/MT6895-Mainline/linux/commit/452811fdcf67fc7c6d2f97b46e80c6e5ac29d8c5"
+    "sha": "fd8eba73fc43ab1d86b42c92557d39dd6f3e45ed",
+    "subject": "drm/mediatek: map generic planes to real OVL layers for the hardware cursor",
+    "url": "https://github.com/MT6895-Mainline/linux/commit/fd8eba73fc43ab1d86b42c92557d39dd6f3e45ed"
   },
-  "updated_at": "2026-10-02 17:01:09 UTC"
+  "updated_at": "2026-10-03 15:25:18 UTC"
 }
